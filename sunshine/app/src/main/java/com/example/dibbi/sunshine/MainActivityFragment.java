@@ -1,6 +1,8 @@
 package com.example.dibbi.sunshine;
 
 import android.content.ClipData;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
@@ -12,8 +14,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -105,6 +109,19 @@ public class MainActivityFragment extends Fragment {
         ListView listView = (ListView) rootView.findViewById(R.id.listView_forecast);
 
         listView.setAdapter(MforcastAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, android.view.View view,int position,long l){
+
+                  String forecast = MforcastAdapter.getItem(position);
+                Intent in = new Intent(getActivity(),Details_activity.class).putExtra(Intent.EXTRA_TEXT,forecast);
+                startActivity(in);
+//                Toast toast = Toast.makeText(getActivity(), forecast, Toast.LENGTH_SHORT);
+//                toast.show();
+            }
+        });
 
         return rootView;
 
