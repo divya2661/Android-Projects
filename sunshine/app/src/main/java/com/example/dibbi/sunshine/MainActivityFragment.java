@@ -51,6 +51,9 @@ public class MainActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        weatherTask.execute("94043");
+
         setHasOptionsMenu(true);
     }
 
@@ -65,12 +68,20 @@ public class MainActivityFragment extends Fragment {
 
         int id = item.getItemId();
 
+        //On refreshing click
         if(id==R.id.action_refresh) {
 
             FetchWeatherTask weatherTask = new FetchWeatherTask();
             weatherTask.execute("94043");
             return true;
         }
+        //on setting click front_screen
+        else if(id==R.id.action_settings)
+        {
+            startActivity(new Intent(getActivity(),SettingsActivity.class));
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -80,22 +91,9 @@ public class MainActivityFragment extends Fragment {
 
 
         String[] forecastArray = new String[]{
-                "Mon - Clear - 1/-3",
-                "Mon - Clear - 1/-3",
-                "Mon - Clear - 1/-3",
-                "Mon - Clear - 1/-3",
-                "Mon - Clear - 1/-3",
-                "Mon - Clear - 1/-3",
-                "Mon - Clear - 1/-3"
+                "loading....",
 
         };
-
-//        String[] array = {"a","b","c","d","e","f","g"};
-//        ArrayList<String> lst = new ArrayList<String>(Arrays.asList(array));
-//        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-//                                                                       android.R.layout.
-//
-//                                                                            simple_list_item_1, lst);
 
         ArrayList<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
 
@@ -118,13 +116,10 @@ public class MainActivityFragment extends Fragment {
                   String forecast = MforcastAdapter.getItem(position);
                 Intent in = new Intent(getActivity(),Details_activity.class).putExtra(Intent.EXTRA_TEXT,forecast);
                 startActivity(in);
-//                Toast toast = Toast.makeText(getActivity(), forecast, Toast.LENGTH_SHORT);
-//                toast.show();
             }
         });
 
         return rootView;
-
     }
 
 
@@ -137,20 +132,8 @@ public class MainActivityFragment extends Fragment {
             LOG_TAG = FetchWeatherTask.class.getSimpleName();
         }
 
+         // Prepare the weather high/lows for presentation.
 
-        /* The date/time conversion code is going to be moved outside the asynctask later,
-        * so for convenience we're breaking it out into its own method now.
-        */
-        private String getReadableDateString(long time){
-            // Because the API returns a unix timestamp (measured in seconds),
-            // it must be converted to milliseconds in order to be converted to valid date.
-            SimpleDateFormat shortenedDateFormat = new SimpleDateFormat("EEE MMM dd");
-            return shortenedDateFormat.format(time);
-        }
-
-        /**
-         * Prepare the weather high/lows for presentation.
-         */
         private String formatHighLows(double high, double low) {
             // For presentation, assume the user doesn't care about tenths of a degree.
             long roundedHigh = Math.round(high);
@@ -190,47 +173,19 @@ public class MainActivityFragment extends Fragment {
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
             JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
 
-            Log.v(LOG_TAG, "Dibbiiiiiiiiiii: ");
-            // OWM returns daily forecasts based upon the local time of the city that is being
-            // asked for, which means that we need to know the GMT offset to translate this data
-            // properly.
-
-            // Since this data is also sent in-order and the first day is always the
-            // current day, we're going to take advantage of that to get a nice
-            // normalized UTC date for all of our weather.
-
-            //Time dayTime = new Time();
-            //dayTime.setToNow();
-
-            // we start at the day returned by local time. Otherwise this is a mess.
-            // int julianStartDay = Time.getJulianDay(System.currentTimeMillis(), dayTime.gmtoff);
-
-            // now we work exclusively in UTC
-            // dayTime = new Time();
             Calendar calendar = Calendar.getInstance();
             int day_num = calendar.get(Calendar.DAY_OF_WEEK)-1;
-            Log.e(LOG_TAG,"day_num_initial: "+day_num);
+           // Log.e(LOG_TAG,"day_num_initial: "+day_num);
             String[] resultStrs = new String[numDays];
 
             for(int i = 0; i < weatherArray.length(); i++) {
-                // For now, using the format "Day, description, hi/low"
+
                 String day = null;
                 String description;
                 String highAndLow;
 
-                // Get the JSON object representing the day
                 JSONObject dayForecast = weatherArray.getJSONObject(i);
 
-                // The date/time is returned as a long.  We need to convert that
-                // into something human-readable, since most people won't read "1400356800" as
-                // "this saturday".
-                // long dateTime;
-                // Cheating to convert this to UTC time, which is what we want anyhow
-                //dateTime = dayTime.setJulianDay(julianStartDay+i);
-                //day = getReadableDateString(dateTime);
-
-
-//                Log.e(LOG_TAG,"day_num: "+day_num);
                 if(day_num==0)
                     day = "Sun";
                 else if(day_num==1)
@@ -382,9 +337,8 @@ public class MainActivityFragment extends Fragment {
 
             if(result!=null) {
                 MforcastAdapter.clear();
-                Log.e(LOG_TAG, "okay clear is working: ");
+
                 for(String weekforecast : result){
-                    Log.e("for loop: ", weekforecast );
                     MforcastAdapter.add(weekforecast);
                 }
             }
