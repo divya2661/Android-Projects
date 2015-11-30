@@ -3,8 +3,10 @@ package com.example.dibbi.sunshine;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -72,14 +74,22 @@ public class MainActivityFragment extends Fragment {
         if(id==R.id.action_refresh) {
 
             FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("94043");
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String location = prefs.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
+            String temp_unit = prefs.getString(getString(R.string.pref_temp_key),"1");
+            //Log.e("temp","temp unit" + temp_unit);
+            weatherTask.execute(location);
+
             return true;
         }
         //on setting click front_screen
-        else if(id==R.id.action_settings)
-        {
+        else if(id==R.id.action_settings) {
             startActivity(new Intent(getActivity(),SettingsActivity.class));
             return true;
+        }
+        //on map click
+        else if(id==R.id.action_map){
+            startActivity(new Intent(getActivity(),mapActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
@@ -169,6 +179,7 @@ public class MainActivityFragment extends Fragment {
             final String OWM_MAX = "max";
             final String OWM_MIN = "min";
             final String OWM_DESCRIPTION = "main";
+            String temp_unit_type = "C";
 
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
             JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
@@ -211,8 +222,23 @@ public class MainActivityFragment extends Fragment {
                 double high = temperatureObject.getDouble(OWM_MAX);
                 double low = temperatureObject.getDouble(OWM_MIN);
 
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String temp_unit = prefs.getString(getString(R.string.pref_temp_key), "1");
+                Log.e("tag","temp_unit_dibbi: " + temp_unit);
+                if(temp_unit.equals("2")){
+
+                    high = high*9/5 + 32;
+                    low = low*9/5 + 32;
+                    temp_unit_type = "F";
+                    Log.e("tag","temp_unit_type: " + temp_unit_type + " high: " + high + " low " + low);
+                }
+
                 highAndLow = formatHighLows(high, low);
-                resultStrs[i] = day + " - " + description + " - " + highAndLow;
+
+
+                resultStrs[i] = day + " - " + description + " - " + highAndLow + temp_unit_type;
+
+
 
                 day_num = (day_num + 1)%7;
             }

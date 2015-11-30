@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:weightSum="1"
-    android:background="#f0efef">
+    android:background="#f9f6f6"
+    android:textAlignment="center"
+    android:baselineAligned="true">
 
     <TextView
-        android:layout_width="321dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Today-sunny-88/63"
         android:id="@+id/list_item_forecast_textview"
         android:layout_gravity="center_horizontal"
         android:layout_weight="0.08"
         android:textSize="25dp"
+        android:textAlignment="center"
         android:background="#cfc9c9" />
 </LinearLayout>

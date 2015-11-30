@@ -3,6 +3,7 @@ package com.example.dibbi.sunshine;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +17,11 @@ public class SettingsActivityFragment extends Fragment {
     public SettingsActivityFragment() {
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.e("okay","coming to fragmnt setting");
 //        Intent setFragintent = getActivity().getIntent();
 //
        View rootview = inflater.inflate(R.layout.fragment_settings, container, false);
